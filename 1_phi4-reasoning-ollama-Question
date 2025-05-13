@@ -1,0 +1,1 @@
+on a Windows OS with dual-homed networking, the first NIC is configured to access internet through a proxy. When activating the second NIC to access a private network, the connection to internet is not working anymore. What is the issue ?
