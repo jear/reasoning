@@ -1,0 +1,35 @@
+
+Below is some general guidance on dual-homed network issues. Please note that while this information is intended to help, you should verify any changes in a test environment and consult with your network administrator or a certified professional for production systems.
+
+**Summary of the Issue:**
+
+When both NICs are active, Windows may update its routing table and mistakenly choose the second (private network) NIC as the default route. Since this NIC is connected only to an isolated private network without Internet connectivity, all outbound traffic intended for the Internet can be misrouted through it instead of using the primary NIC that has proper Internet access and proxy configuration.
+
+**Key Points:**
+
+- **Dual-Homed Routing Conflict:**  
+  Windows might assign a default route based on interface metrics or other routing policies. When you activate the second NIC, its route may have a lower metric (or otherwise be preferred) over the primary NIC—even though it doesn’t provide Internet connectivity—resulting in misrouted traffic.
+
+- **Default Gateway Misassignment:**  
+  With both interfaces active, Windows might determine that the new NIC is “better” for routing purposes. Consequently, outbound packets intended for external destinations are sent out via this private network interface.
+
+- **Proxy Configuration:**  
+  Even though your proxy settings may be correctly configured on applications (like a browser), if the traffic doesn’t reach the proper gateway due to misrouted default settings, those proxy configurations won’t help in establishing an Internet connection.
+
+**Steps to Resolve:**
+
+1. **Manually Configure Routing Rules:**  
+   You can create routing rules or adjust interface metrics so that only traffic destined for external IP addresses uses the primary NIC (with Internet connectivity). Tools like “route” command or Windows PowerShell’s New-NetRoute cmdlet can help enforce these rules.
+
+2. **Disable Unnecessary Routes on the Second NIC:**  
+   If possible, disable automatic routing assignments on the private network interface or ensure that it does not become the default route by modifying its settings or using static routes.
+
+3. **Review Adapter Priority Settings:**  
+   Check if Windows is assigning a lower metric to one of your adapters inadvertently and adjust the adapter properties (especially the “metric” field) so that the NIC with Internet connectivity retains the proper priority.
+
+4. **Network Isolation Policies:**  
+   In some cases, network policies or firewall settings might also influence which interface handles certain types of traffic. Review these settings if you continue to face routing issues.
+
+By ensuring that your primary NIC remains the default for Internet-bound traffic and configuring appropriate routing rules, you can prevent misrouting when using dual-homed networking on a Windows OS.
+
+Please verify all changes in a controlled environment before applying them to your production systems.
